@@ -19,16 +19,16 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 	} // end of generateMaze()
 
 	private void normalMaze(Maze maze){
+		boolean flag = true;
 		int maxR = maze.sizeR;
 		int maxrC = maze.sizeC;
 		Cell map[][] = maze.map;
 		boolean visited[][] = new boolean[maxR][maxrC];
 		Stack<Cell> s = new Stack<Cell>();
 		//Cell current = map[randPos(maxR)][randPos(maxrC)];
-		Cell current = map[1][1];
-		s.push(current);
+		Cell current = maze.entrance;
 		visited[current.r][current.c] = true;
-		while(!s.isEmpty()){
+		while(flag){
 			System.out.println(current.r+"  "+current.c);
 			int direc[] = direction(4);
 			if(getNeighVisCheck(current, maze, visited, false)){
@@ -44,7 +44,6 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 							maze.map[current.c][current.r].wall[dec].present = false;
 							maze.map[next.c][next.r].wall[maze.oppoDir[dec]].present = false;
 							s.push(current);
-							System.out.println(visited[current.r][current.c]+" Setting Visited");
 							visited[current.r][current.c] = true;
 							current = next;
 							break;
@@ -56,6 +55,9 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 				s.pop();
 				if(!s.isEmpty())
 					current = s.peek();
+				else{
+					flag = false;
+				}
 			}
 			
 		}
