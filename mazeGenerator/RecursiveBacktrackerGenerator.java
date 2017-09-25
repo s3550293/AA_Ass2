@@ -35,7 +35,9 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 				for(int i=0;i<direc.length;i++){
 					int dec = getMapMove(maze,direc[i]);
 					//System.out.println("TEST IF: "+!isVisited(current.r+maze.deltaR[dec],current.c+maze.deltaC[dec],maze.sizeR,maze.sizeC,visited));
-					if(!isVisited(current.r+maze.deltaR[dec],current.c+maze.deltaC[dec],maze.sizeR,maze.sizeC,visited)){
+					if(isVisited(current.r+maze.deltaR[dec],current.c+maze.deltaC[dec],maze.sizeR,maze.sizeC,visited) == false){
+						System.out.println("Has this been visted: "+visited[current.r][current.c]);
+						visited[current.r][current.c] = true;
 						Cell next = getNeigh(current, maze, visited, dec);
 						System.out.println(next.r+"  "+next.c+" HAS NOT BEEN VISITED BEFORE");
 						System.out.println(visited[next.r][next.c]+" BEEN VISITED");
@@ -44,7 +46,6 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 							maze.map[current.c][current.r].wall[dec].present = false;
 							maze.map[next.c][next.r].wall[maze.oppoDir[dec]].present = false;
 							s.push(current);
-							visited[current.r][current.c] = true;
 							current = next;
 							break;
 						}
