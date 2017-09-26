@@ -4,7 +4,8 @@ javac -cp .:mazeSolver/SampleSolver.jar *.java
 To run on server:
 java -cp .:mazeSolver/SampleSolver.jar MazeTester inputFilename n
 
-
+To compile on Windows:
 javac -cp .;mazeSolver/SampleSolver.jar *.java
 
-java -cp .;mazeSolver/SampleSolver.jar MazeTester example1.para y
+To run on Windows:
+java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackHex.para n
