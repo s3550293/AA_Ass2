@@ -13,5 +13,7 @@ public class GrowingTreeGenerator implements MazeGenerator {
 	@Override
 	public void generateMaze(Maze maze) {
 
+
 	}
+
 }

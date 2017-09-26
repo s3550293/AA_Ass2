@@ -25,16 +25,26 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 	private void normalMaze(Maze maze, int sides){
 		boolean flag = true;
 		int maxR = maze.sizeR;
-		int maxrC = maze.sizeC;
+		int maxC = maze.sizeC;
 		Cell map[][] = maze.map;
 		boolean visited[][] = null;
 		Cell current = null;
 		if(maze.type == maze.HEX){
-			visited = new boolean[maxR][maxrC + (maxR + 1) / 2];
-			current = map[randPos(maxR)][randPos(maxrC + (maxR + 1) / 2)];
+			visited = new boolean[maxR][maxC + (maxC + 1) / 2];
+			current = map[randPos(maxR)][randPos(maxC)];
 		}else{
-			visited = new boolean[maxR][maxrC];
-			current = map[randPos(maxR)][randPos(maxrC)];
+			visited = new boolean[maxR][maxC];
+			current = map[randPos(maxR)][randPos(maxC)];
+		}
+		for(int i=0;i<maxR;i++){
+			System.out.print("| ");
+			for(int j=0;j<maxC;j++){
+				if(maze.map[i][j]!=null)
+					System.out.print(" 1 ");
+				else
+					System.out.print(" 0 ");
+			}
+			System.out.print(" |\n");
 		}
 		Stack<Cell> s = new Stack<Cell>();
 		int count = 0;
@@ -48,10 +58,8 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 					if(!isVisited(current.r+maze.deltaR[dec],current.c+maze.deltaC[dec],maze.sizeR,maze.sizeC,visited,maze.type)){
 						System.out.println("Current: "+current.r+", "+current.c);
 						Cell next = getNeigh(current, maze, visited, dec);
+						//System.out.println("Next: "+next.r+", "+next.c);
 						if(next!=null){
-							System.out.println("Next: "+next.r+", "+next.c);
-							current.neigh[dec] = next;
-							next.neigh[Maze.oppoDir[dec]] = current;
 							next.wall[Maze.oppoDir[dec]].present = false;
 							current.wall[dec].present = false;
 							s.push(current);
