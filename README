@@ -8,4 +8,6 @@ To compile on Windows:
 javac -cp .;mazeSolver/SampleSolver.jar *.java
 
 To run on Windows:
-java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackHex.para n
+java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackHex.para y
+
+java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackNorm.para y

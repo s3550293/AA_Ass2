@@ -89,10 +89,8 @@ public abstract class Maze {
 	 */
 	public abstract void drawFtPrt(Cell cell);
 
-
-        /**
-         * Show validation result of whether the maze is solved
-         */
-        public abstract boolean validate();
-
+    /**
+     * Show validation result of whether the maze is solved
+     */
+    public abstract boolean validate();
 }
