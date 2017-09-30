@@ -13,3 +13,5 @@ java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackHex.para y
 java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackNorm.para y
 
 java -cp .;mazeSolver/SampleSolver.jar MazeTester recurBackTun.para y
+
+java -cp .;mazeSolver/SampleSolver.jar MazeTester PrimNorm.para y

@@ -5,7 +5,6 @@ import maze.Cell;
 import maze.Maze;
 
 public class RecursiveBacktrackerGenerator implements MazeGenerator {
-
 	@Override
 	public void generateMaze(Maze maze) {
 		// TODO Auto-generated method stub
@@ -26,6 +25,7 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 		Stack<Cell> s = new Stack<Cell>();
 		do{
 			Cell next = getNeigh(map, current, sizeR, sizeC, visited, maze.type);
+			System.out.println("Current: "+current.r+" "+current.c);
 			if(next!=null){
 				visited[current.r][current.c] = true;
 				s.push(current);
@@ -77,23 +77,23 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 				return cur.tunnelTo;
 			}
 		}
-			for(int i=0;i<Maze.NUM_DIR;i++){
-				if(dir[i]==Maze.EAST){move = dir[i];}
-				else if(dir[i]==Maze.NORTH){move = dir[i];}
-				else if(dir[i]==Maze.WEST){move = dir[i];}
-				else if(dir[i]==Maze.SOUTH){move = dir[i];}
-				if(type == Maze.HEX){
-					if(dir[i]==Maze.SOUTHWEST){move = dir[i];}
-					else if(dir[i]==Maze.NORTHEAST){move = dir[i];}
+		for(int i=0;i<Maze.NUM_DIR;i++){
+			if(dir[i]==Maze.EAST){move = dir[i];}
+			else if(dir[i]==Maze.NORTH){move = dir[i];}
+			else if(dir[i]==Maze.WEST){move = dir[i];}
+			else if(dir[i]==Maze.SOUTH){move = dir[i];}
+			if(type == Maze.HEX){
+				if(dir[i]==Maze.SOUTHWEST){move = dir[i];}
+				else if(dir[i]==Maze.NORTHEAST){move = dir[i];}
+			}
+			if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
+				if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
+					next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
+					next.wall[Maze.oppoDir[move]].present = false;
+					cur.wall[move].present = false;
+					return next;
 				}
-				if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
-					if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
-						next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
-						next.wall[Maze.oppoDir[move]].present = false;
-						cur.wall[move].present = false;
-						return next;
-					}
-				}
+			}
 		}
 		return next;
 	}
