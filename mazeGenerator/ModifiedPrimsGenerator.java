@@ -20,15 +20,21 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 		visited = new boolean[sizeR][sizeC];
 		inCells.add(current);
 		do{
-			frontier = addFront(maze, frontier, visited, current, maze.type);
+			frontier = addFront(maze, frontier, inCells, current, maze.type);
 			if(!frontier.isEmpty()){
 				Cell next = frontier.get(randPos(frontier.size()));
 				if(next!=null){
 					Cell neigh = getNeigh(maze, next, inCells, maze.type);
 					if(neigh!=null){
+						System.out.println("Next: "+next.r+" "+next.c);
+						System.out.println("Neigh: "+neigh.r+" "+neigh.c);
+						System.out.println("Direction: "+getMove(neigh,next));
+						neigh.wall[getMove(neigh,next)].present = false;
+						next.wall[Maze.oppoDir[getMove(neigh,next)]].present = false;
 						frontier.remove(next);
+						visited[next.r][next.c] = true;
+						inCells.add(next);
 						current = next;
-						inCells.add(current);
 					}
 				}
 			}
@@ -64,11 +70,26 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 		return arr;
 	}
 
-	private ArrayList<Cell> addFront(Maze m, ArrayList<Cell> frontier, boolean vis[][], Cell curr, int type){
+	private int getMove(Cell start, Cell end){
 		for(int i=0;i<Maze.NUM_DIR;i++){
+			if(start.r+Maze.deltaR[i] == end.r && start.c+Maze.deltaC[i] == end.c){
+				System.out.println("Direction is: "+i);
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	private ArrayList<Cell> addFront(Maze m, ArrayList<Cell> frontier, ArrayList<Cell> inCells, Cell curr, int type){
+		for(int i=0;i<Maze.NUM_DIR;i++){
+			boolean isfound = false;
 			if(i!=1||i!=4){
 				if(inBounds(curr.r+m.deltaR[i],0,m.sizeR,curr.c+m.deltaC[i],0,m.sizeC,type)){
-					if(!vis[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]){
+					for(Cell c: inCells){
+						if(c == m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]])
+							isfound = true;
+					}
+					if(!isfound){
 						frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
 					}
 				}
@@ -76,9 +97,9 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 			if(type==Maze.HEX){
 				if(i==1||i==4){
 					if(inBounds(curr.r+m.deltaR[i],0,m.sizeR,curr.c+m.deltaC[i],0,m.sizeC,type)){
-						if(!vis[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]){
-							frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
-						}
+						// if(!vis[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]){
+						// 	frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
+						// }
 					}
 				}
 			}
@@ -89,16 +110,10 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 	private Cell getNeigh(Maze m, Cell next, ArrayList<Cell> inCells, int type){
 		int dire[] = direction(Maze.NUM_DIR);
 		for(int i=0;i<Maze.NUM_DIR;i++){
-			if(dire[i]!=1||dire[i]!=4){
+			if(dire[i]!=1 && dire[i]!=4){
 				if(inBounds(next.r+m.deltaR[dire[i]],0,m.sizeR,next.c+m.deltaC[dire[i]],0,m.sizeC,type)){
 					for(Cell c: inCells){
 						if(c == m.map[next.r+m.deltaR[dire[i]]][next.c+m.deltaC[dire[i]]]){
-							System.out.println("Next: "+next.r+" "+next.c);
-							System.out.println("Neigh: "+c.r+" "+c.c);
-							System.out.println("Direction: "+dire[i]);
-							System.out.println("Next Wall: "+next.wall[dire[i]].present);
-							next.wall[dire[i]].present = false;
-							c.wall[Maze.oppoDir[dire[i]]].present = false;
 							return c;
 						}
 					}
@@ -109,8 +124,6 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 					if(inBounds(next.r+m.deltaR[dire[i]],0,m.sizeR,next.c+m.deltaC[dire[i]],0,m.sizeC,type)){
 						for(Cell c: inCells){
 							if(c == m.map[next.r+m.deltaR[dire[i]]][next.c+m.deltaC[dire[i]]]){
-								next.wall[dire[i]].present = false;
-								c.wall[Maze.oppoDir[dire[i]]].present = false;
 								return c;
 							}
 						}
