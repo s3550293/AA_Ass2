@@ -15,7 +15,13 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 		Cell map[][] = maze.map;
 		ArrayList<Cell> inCells = new ArrayList<Cell>();
 		ArrayList<Cell> frontier = new ArrayList<Cell>();
-		current = map[randPos(sizeR)][randPos(sizeC)];
+		if(maze.type == Maze.HEX){
+			do{
+				current = maze.map[randPos(sizeR)][randPos(sizeC + (sizeR + 1) / 2)];
+			}while(current==null);
+		}else{
+			current = map[randPos(sizeR)][randPos(sizeC)];
+		}
 		inCells.add(current);
 		do{
 			frontier = addFront(maze, frontier, inCells, current, maze.type);
