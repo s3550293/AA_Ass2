@@ -11,13 +11,11 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 		// TODO Auto-generated method stub
 		int sizeR = maze.sizeR;
 		int sizeC = maze.sizeC;
-		boolean visited[][] = null;
 		Cell current = null;
 		Cell map[][] = maze.map;
 		ArrayList<Cell> inCells = new ArrayList<Cell>();
 		ArrayList<Cell> frontier = new ArrayList<Cell>();
 		current = map[randPos(sizeR)][randPos(sizeC)];
-		visited = new boolean[sizeR][sizeC];
 		inCells.add(current);
 		do{
 			frontier = addFront(maze, frontier, inCells, current, maze.type);
@@ -32,7 +30,6 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 						neigh.wall[getMove(neigh,next)].present = false;
 						next.wall[Maze.oppoDir[getMove(neigh,next)]].present = false;
 						frontier.remove(next);
-						visited[next.r][next.c] = true;
 						inCells.add(next);
 						current = next;
 					}
@@ -85,21 +82,16 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 			boolean isfound = false;
 			if(i!=1||i!=4){
 				if(inBounds(curr.r+m.deltaR[i],0,m.sizeR,curr.c+m.deltaC[i],0,m.sizeC,type)){
-					for(Cell c: inCells){
-						if(c == m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]])
-							isfound = true;
-					}
-					if(!isfound){
+					if(!inCells.contains(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]) && !frontier.contains(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]))
 						frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
 					}
 				}
-			}
 			if(type==Maze.HEX){
 				if(i==1||i==4){
 					if(inBounds(curr.r+m.deltaR[i],0,m.sizeR,curr.c+m.deltaC[i],0,m.sizeC,type)){
-						// if(!vis[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]){
-						// 	frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
-						// }
+						if(!inCells.contains(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]) && !frontier.contains(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]))
+							frontier.add(m.map[curr.r+m.deltaR[i]][curr.c+m.deltaC[i]]);
+						}
 					}
 				}
 			}
