@@ -15,13 +15,13 @@ public class WallFollowerSolver implements MazeSolver{
 	@Override
 	public void solveMaze(Maze maze){
 		Cell map[][] = maze.map;
+		boolean visitedTunnels[][];
+		visitedTunnels = new boolean[maze.sizeR][maze.sizeC];
 		Cell curPos = maze.entrance;
 		int curDir = maze.EAST;
 		mazeType = maze.type;
 		maze.drawFtPrt(curPos);
 		visitedCounter++;
-		System.out.println("Maze type: " + maze.type);
-
 
 		//debug
 		/*
@@ -64,12 +64,32 @@ public class WallFollowerSolver implements MazeSolver{
 			*/
 			if(curPos == maze.exit)
 				flagEnd = true;
+			else if(curPos.tunnelTo != null && visitedTunnels[curPos.r][curPos.c] == false){
+				visitedTunnels[curPos.r][curPos.c] = true;
+				curPos = curPos.tunnelTo;
+				maze.drawFtPrt(curPos);
+				visitedCounter++;
+				while(curPos.tunnelTo != null){
+					if(curPos.wall[antiClockwise(curDir)].present == false){
+						curDir = antiClockwise(curDir);
+						curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
+						maze.drawFtPrt(curPos);
+						visitedCounter++;
+					}
+					else if(curPos.wall[curDir].present == false){
+						curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
+						maze.drawFtPrt(curPos);
+						visitedCounter++;
+					}
+					else{
+						curDir = clockwise(curDir);
+					}
+				}
+			}
 			//if there is no left wall
 			else if(curPos.wall[antiClockwise(curDir)].present == false){
-				System.out.println("1st = " + curDir);
 				curDir = antiClockwise(curDir);
 				curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
-				System.out.println("2nd = " + curDir);
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
 				//below is needed to avoid logic error of current method ;-;
@@ -79,7 +99,6 @@ public class WallFollowerSolver implements MazeSolver{
 			}
 			//if there is no front wall
 			else if(curPos.wall[curDir].present == false){
-				System.out.println("Forward = " + curDir);
 				curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
@@ -89,7 +108,6 @@ public class WallFollowerSolver implements MazeSolver{
 				}
 			}
 			else{
-				System.out.println("CW = " + curDir);
 				curDir = clockwise(curDir);
 			}
 		}// end of while
