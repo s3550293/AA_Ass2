@@ -8,91 +8,147 @@ import maze.*;
  */
 
 public class WallFollowerSolver implements MazeSolver{
+	boolean flagEnd = false;
+	int visitedCounter = 0;
+	int mazeType = -1;
 
 	@Override
 	public void solveMaze(Maze maze){
-		boolean flagEnd = false;
 		Cell map[][] = maze.map;
 		Cell curPos = maze.entrance;
 		int curDir = maze.EAST;
+		mazeType = maze.type;
 		maze.drawFtPrt(curPos);
+		visitedCounter++;
+		System.out.println("Maze type: " + maze.type);
 
-		/*
+
 		//debug
-		System.out.println("South = " + curPos.wall[maze.SOUTH].present);
+		/*
 		System.out.println("r = " + curPos.r);
 		System.out.println("c = " + curPos.c);
 		System.out.println("East = " + curPos.wall[maze.EAST].present);
 		System.out.println("West = " + curPos.wall[maze.WEST].present);
-		curDir = antiClockwise(curDir);
-		curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
-		System.out.println("r = " + curPos.r);
-		System.out.println("c = " + curPos.c);
-		maze.drawFtPrt(curPos);
+		System.out.println("NW = " + curPos.wall[maze.NORTHWEST].present);
+		System.out.println("NE = " + curPos.wall[maze.NORTHEAST].present);
+		System.out.println("SW = " + curPos.wall[maze.SOUTHWEST].present);
+		System.out.println("SE = " + curPos.wall[maze.SOUTHEAST].present);
+		for(int i=0;i<6;i++){
+			curDir = antiClockwise(curDir);
+			System.out.println("ACW[" + i + "]" + " = " + curDir);
+		}
+		for(int i=0;i<6;i++){
+			curDir = clockwise(curDir);
+			System.out.println("CW[" + i + "]" + " = " + curDir);
+		}
+		for(int i=0;i<3;i++){
+			curPos = map[curPos.r + maze.deltaR[maze.SOUTHWEST]][curPos.c + maze.deltaC[maze.SOUTHWEST]];
+			maze.drawFtPrt(curPos);
+		}
+		for(int i=0;i<3;i++){
+			curPos = map[curPos.r + maze.deltaR[maze.WEST]][curPos.c + maze.deltaC[maze.WEST]];
+			maze.drawFtPrt(curPos);
+		}
 		*/
 
 		//workspace
 		while(flagEnd == false){
+			/*
+			//Debug
+			try{
+    		Thread.sleep(1000);
+			}
+			catch(InterruptedException ex){
+    		Thread.currentThread().interrupt();
+			}
+			*/
 			if(curPos == maze.exit)
 				flagEnd = true;
+			//if there is no left wall
 			else if(curPos.wall[antiClockwise(curDir)].present == false){
+				System.out.println("1st = " + curDir);
 				curDir = antiClockwise(curDir);
-				System.out.println(curDir);
 				curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
+				System.out.println("2nd = " + curDir);
 				maze.drawFtPrt(curPos);
+				visitedCounter++;
+				//below is needed to avoid logic error of current method ;-;
+				if(mazeType == 2){
+					curDir = antiClockwise(curDir);
+				}
 			}
+			//if there is no front wall
 			else if(curPos.wall[curDir].present == false){
+				System.out.println("Forward = " + curDir);
 				curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
 				maze.drawFtPrt(curPos);
+				visitedCounter++;
+				//below is needed to avoid logic error of current method ;-;
+				if(mazeType == 2){
+					curDir = antiClockwise(curDir);
+				}
 			}
 			else{
+				System.out.println("CW = " + curDir);
 				curDir = clockwise(curDir);
 			}
-		}
+		}// end of while
 	} // end of solveMaze()
 
 	//finds direction that is anticlockwise of the current direction
-	//only works for normal
-	private int antiClockwise(int dir){
-		switch (dir) {
-			case 0:
-				return 2;
-			case 2:
-				return 3;
-			case 3:
-				return 5;
-			case 5:
+	public int antiClockwise(int dir){
+		if(mazeType == 2){
+			if(dir == 5)
 				return 0;
+			else
+				return ++dir;
+		}
+		else{
+			switch (dir) {
+				case 0:
+					return 2;
+				case 2:
+					return 3;
+				case 3:
+					return 5;
+				case 5:
+					return 0;
+			}
 		}
 		return -1;
 	} //end of antiClockwise()
 
+	//finds direction that is clockwise of th current direction
 	private int clockwise(int dir){
-		switch (dir) {
-			case 0:
+		if(mazeType == 2){
+			if(dir == 0)
 				return 5;
-			case 5:
-				return 3;
-			case 3:
-				return 2;
-			case 2:
-				return 0;
- 		}
+			else
+				return --dir;
+		}
+		else{
+			switch (dir) {
+				case 0:
+					return 5;
+				case 5:
+					return 3;
+				case 3:
+					return 2;
+				case 2:
+					return 0;
+	 		}
+		}
 		return -1;
 	} //end of clockwise()
 
 	@Override
 	public boolean isSolved(){
-		// TODO Auto-generated method stub
-		// true if solved.
-		return false;
+		return flagEnd;
 	} // end if isSolved()
 
 	@Override
 	public int cellsExplored(){
-		// TODO Auto-generated method stub
-		// counts no. of cells explored
-		return 0;
+		return visitedCounter;
 	} // end of cellsExplored()
 
 } // end of class WallFollowerSolver
