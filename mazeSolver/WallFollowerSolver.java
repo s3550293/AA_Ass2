@@ -15,23 +15,25 @@ public class WallFollowerSolver implements MazeSolver{
 	boolean flagEnd = false;
 	// counter of the amount of cells traversed
 	int visitedCounter = 0;
-	// declares the maze type,
+	// declares the maze type, 0 = normal, 1 = tunnel, 2 = hex
 	int mazeType = -1;
+	// decalres the map to keep track of visited cells
 	Cell[][] map;
+	// 2D boolean array keeping track of cells visited,
 	boolean[][] visitedCells;
+	// declares the cell which moves
 	Cell curPos;
+	// keeps track of which direction the curPos is facing
 	int curDir;
 
 	/*
 	 * Left hand wall follower search
 	 *
 	 * ******************************************************************************************
-	 *
 	 * ALGORITHM DFS ( G )
 	 * Perform a left hand wall follower search on the maze
 	 * Input: Maze of cells declared by the variable "maze"
 	 * OUTPUT : Maze "maze" marked with grey circles to show visited cells.
-	 *
 	 * ******************************************************************************************
 	 *
 	 * @param maze Input Maze.
@@ -58,6 +60,7 @@ public class WallFollowerSolver implements MazeSolver{
 
 		//solver loop
 		while(flagEnd == false){
+			//if found exit, end loop
 			if(curPos == maze.exit)
 				flagEnd = true;
 			//if tunnel is detected
@@ -84,11 +87,13 @@ public class WallFollowerSolver implements MazeSolver{
 				}
 			}
 			//if there is no left wall
+			//turn anticlockwise and move forward
 			else if(curPos.wall[antiClockwise(curDir)].present == false){
 				curDir = antiClockwise(curDir);
 				moveForward(maze);
 			}
 			//if there is no front wall
+			//move forward
 			else if(curPos.wall[curDir].present == false){
 				moveForward(maze);
 			}
@@ -99,7 +104,19 @@ public class WallFollowerSolver implements MazeSolver{
 		}// end of while
 	} // end of solveMaze()
 
-	//moves curPos forward
+	/*
+	 * Move forward
+	 *
+	 * ******************************************************************************************
+	 //???????????
+	 * ALGORITHM DFS ( G )
+	 * Perform a left hand wall follower search on the maze
+	 * Input: Maze of cells declared by the variable "maze"
+	 * OUTPUT : Maze "maze" marked with grey circles to show visited cells.
+	 * ******************************************************************************************
+	 *
+	 * @param maze Input Maze.
+	 */
 	private void moveForward(Maze maze){
 		curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
 		maze.drawFtPrt(curPos);
@@ -112,7 +129,19 @@ public class WallFollowerSolver implements MazeSolver{
 			curDir = antiClockwise(curDir);
 	}
 
-	//finds direction that is anticlockwise of the current direction
+	/*
+	 * Anticlockwise
+	 *
+	 * ******************************************************************************************
+	 * ALGORITHM DFS ( G )
+	 * Finds the 
+	 * Input: integer representing the current direction
+	 * OUTPUT : integer representing the anticlockwise direction of the current direction
+	 * ******************************************************************************************
+	 *
+	 * @param integer representing current direction
+	 * @returns integer representing the direction anticlockwise of the current direction
+	 */
 	private int antiClockwise(int dir){
 		if(mazeType == 2){
 			if(dir == 5)

@@ -9,51 +9,70 @@ import maze.*;
 public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	/*
 	 * Declare global variables
-	 * (I know it's bad practice but it's so easy to work with ;-;)
+	 * (I know it's bad practice but it's so easy to work with, pls no bully ;-;)
 	 */
 	boolean flagEnd = false;
 	int visitedCounter = 0;
 	int mazeType = -1;
 	Cell[][] map;
-	boolean[][] visitedCells;
+	boolean[][] visitedCellsEn, visitedCellsEx;
 	Cell curPos;
 	int curDir;
 
 	@Override
 	public void solveMaze(Maze maze){
-		Stack<Cell> stackCells = new Stack<Cell>();
+		Stack<Cell> stackCellsEn = new Stack<Cell>();
 		//assign values to the global variables
 		map = maze.map;
 		curPos = maze.entrance;
 		curDir = maze.EAST;
 		mazeType = maze.type;
-		if (mazeType == 2)
-			visitedCells = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
-		else
-			visitedCells = new boolean[maze.sizeR][maze.sizeC];
+		if (mazeType == 2){
+			visitedCellsEn = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
+			visitedCellsEx = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
+		}
+		else{
+			visitedCellsEn = new boolean[maze.sizeR][maze.sizeC];
+			visitedCellsEx = new boolean[maze.sizeR][maze.sizeC];
+		}
 
 		//debug
 		for(int i = 0; i < 6; i++){
 			System.out.println(curPos.neigh[i]);
+			curPos = map[curPos.r + maze.deltaR[maze.WEST]][curPos.c + maze.deltaC[maze.WEST]];
+			maze.drawFtPrt(curPos);
+			stackCellsEn.push(curPos);
 		}
+		while(stackCellsEn.empty() == false){
+			System.out.println("Stack! " + stackCellsEn.peek());
+			stackCellsEn.pop();
+		}
+		getRandomNeighbour(curPos);
 
 		//working space
-		stackCells.push(curPos);
-		while(flagEnd == false){
-			stackCells.push(curPos);
-		}
+
+
 	} // end of solveMaze()
 
+	//returns nothing at the moment, will have to implement checking if neighbour has been visited before too.
 	private Cell getRandomNeighbour(Cell pos){
-		Cell[] possibleNeigh = new Cell[6];
+		//declare linked list of possible cells to return
+		LinkedList<Cell> listCells = new LinkedList<Cell>();
+		//adds all neighbours of pos to linked list "listCells"
 		for(int i = 0; i < 6; i++){
-			if(curPos.neigh[i] != null){
-
+			if(pos.neigh[i] != null){
+				listCells.add(pos.neigh[i]);
 			}
 		}
+		System.out.println(Arrays.toString(listCells.toArray()) + ", " + listCells.size() + " elements.");
 		return null;
 	}
 
+	//returns random integeter from 0 to max
+	private int randomNo(int max){
+		Random ran = new Random();
+		return ran.nextInt(max);
+	}
 
 	@Override
 	public boolean isSolved(){
