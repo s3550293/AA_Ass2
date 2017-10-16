@@ -34,6 +34,7 @@ public class WallFollowerSolver implements MazeSolver{
 	 * Perform a left hand wall follower search on the maze
 	 * Input: Maze of cells declared by the variable "maze"
 	 * OUTPUT : Maze "maze" marked with grey circles to show visited cells.
+	 *
 	 * ******************************************************************************************
 	 *
 	 * @param maze Input Maze.
@@ -64,26 +65,27 @@ public class WallFollowerSolver implements MazeSolver{
 			if(curPos == maze.exit)
 				flagEnd = true;
 			//if tunnel is detected
-			else if(curPos.tunnelTo != null){
-				System.out.println("Tunnel = " + curPos.tunnelTo.r + " " + curPos.tunnelTo.c);
+			else if(curPos.tunnelTo != null && visitedCells[curPos.r][curPos.c] == false){
+				visitedCells[curPos.r][curPos.c] = true;
 				curPos = curPos.tunnelTo;
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
-				int flagTunnel = 0;
-				while(flagTunnel >= 0){
-					System.out.println("inside flagTunnel loop");
-					//if there is no front wall
-					if(curPos.wall[curDir].present == false
-					&& (visitedCells[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]] == false
-					|| flagTunnel > 4)){
-						moveForward(maze);
-						flagTunnel = -1;
+				//to account for Jo's weird generation issue of a tunnel exit that has all 4 walls
+				boolean isolatedSquare = true;
+				for(int i = 0; i < 6; i++){
+					if(curPos.neigh[i] != null && curPos.wall[i].present == false){
+						isolatedSquare = false;
+						curDir = i;
 					}
-					else{
-						curDir = clockwise(curDir);
-						++flagTunnel;
-						System.out.println(flagTunnel);
-					}
+				}
+				if(isolatedSquare == true){
+					curPos = curPos.tunnelTo;
+					visitedCounter++;
+				}
+				else{
+					curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
+					maze.drawFtPrt(curPos);
+					visitedCounter++;
 				}
 			}
 			//if there is no left wall
@@ -105,7 +107,7 @@ public class WallFollowerSolver implements MazeSolver{
 	} // end of solveMaze()
 
 	/*
-	 * Move forward
+	 * Left hand wall follower search
 	 *
 	 * ******************************************************************************************
 	 //???????????
@@ -122,8 +124,10 @@ public class WallFollowerSolver implements MazeSolver{
 		maze.drawFtPrt(curPos);
 		visitedCounter++;
 		//visitedCells only used for tunnels
+		/*
 		if(mazeType == 1)
 			visitedCells[curPos.r][curPos.c] = true;
+		*/
 		//below is needed to avoid logic error of current method ;-;
 		if(mazeType == 2)
 			curDir = antiClockwise(curDir);
@@ -134,7 +138,7 @@ public class WallFollowerSolver implements MazeSolver{
 	 *
 	 * ******************************************************************************************
 	 * ALGORITHM DFS ( G )
-	 * Finds the 
+	 * Perform a left hand wall follower search on the maze
 	 * Input: integer representing the current direction
 	 * OUTPUT : integer representing the anticlockwise direction of the current direction
 	 * ******************************************************************************************
