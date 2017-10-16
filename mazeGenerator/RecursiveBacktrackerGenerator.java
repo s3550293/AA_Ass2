@@ -72,28 +72,33 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 		int dir[] = null;
 		int move = 0;
 		dir = direction(6);
+		boolean cont = true;
 		if(cur.tunnelTo!=null){
 			if(!vis[cur.tunnelTo.r][cur.tunnelTo.c]){
 				return cur.tunnelTo;
 			}
 		}
 		for(int i=0;i<Maze.NUM_DIR;i++){
-			if(dir[i]==Maze.EAST){move = dir[i];}
-			else if(dir[i]==Maze.NORTH){move = dir[i];}
-			else if(dir[i]==Maze.WEST){move = dir[i];}
-			else if(dir[i]==Maze.SOUTH){move = dir[i];}
-			if(type == Maze.HEX){
-				if(dir[i]==Maze.SOUTHWEST){move = dir[i];}
-				else if(dir[i]==Maze.NORTHEAST){move = dir[i];}
+			if(dir[i]!=1 && dir[i]!=4){
+				move = dir[i];
 			}
-			if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
-				if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
-					next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
-					//next.wall[Maze.oppoDir[move]].present = false;
-					cur.wall[move].present = false;
-					return next;
+			else if(type==Maze.HEX){
+				move = dir[i];
+			}
+			else{
+				cont = false;
+			}
+			if(cont){
+				if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
+					if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
+						next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
+						//next.wall[Maze.oppoDir[move]].present = false;
+						cur.wall[move].present = false;
+						return next;
+					}
 				}
 			}
+			cont = true;
 		}
 		return next;
 	}

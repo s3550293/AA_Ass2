@@ -100,28 +100,29 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 	}
 
 	private Cell getNeigh(Maze m, Cell next, ArrayList<Cell> inCells, int type){
+		int move = 0;
 		int dire[] = direction(Maze.NUM_DIR);
+		boolean cont = true;
 		for(int i=0;i<Maze.NUM_DIR;i++){
 			if(dire[i]!=1 && dire[i]!=4){
-				if(inBounds(next.r+m.deltaR[dire[i]],0,m.sizeR,next.c+m.deltaC[dire[i]],0,m.sizeC,type)){
+				move = dire[i];
+			}
+			else if(type==Maze.HEX){
+				move = dire[i];
+			}
+			else{
+				cont = false;
+			}
+			if(cont){
+				if(inBounds(next.r+m.deltaR[move],0,m.sizeR,next.c+m.deltaC[move],0,m.sizeC,type)){
 					for(Cell c: inCells){
-						if(c == m.map[next.r+m.deltaR[dire[i]]][next.c+m.deltaC[dire[i]]]){
+						if(c == m.map[next.r+m.deltaR[move]][next.c+m.deltaC[move]]){
 							return c;
 						}
 					}
 				}
 			}
-			if(type==Maze.HEX){
-				if(dire[i]==1||dire[i]==4){
-					if(inBounds(next.r+m.deltaR[dire[i]],0,m.sizeR,next.c+m.deltaC[dire[i]],0,m.sizeC,type)){
-						for(Cell c: inCells){
-							if(c == m.map[next.r+m.deltaR[dire[i]]][next.c+m.deltaC[dire[i]]]){
-								return c;
-							}
-						}
-					}
-				}
-			}
+			cont = true;
 		}
 		return null;
 	}
