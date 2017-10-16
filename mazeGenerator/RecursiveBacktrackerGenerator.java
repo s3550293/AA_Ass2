@@ -89,7 +89,7 @@ public class RecursiveBacktrackerGenerator implements MazeGenerator {
 			if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
 				if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
 					next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
-					//next.wall[Maze.oppoDir[move]].present = false;
+					next.wall[Maze.oppoDir[move]].present = false;
 					cur.wall[move].present = false;
 					return next;
 				}
