@@ -13,27 +13,26 @@ public class GrowingTreeGenerator implements MazeGenerator {
 		int sizeR = maze.sizeR;
 		int sizeC = maze.sizeC;
 		Cell current = null;
-		boolean visited[][] = null;
+		//boolean visited[][] = null;
 		Cell map[][] = maze.map;
 		ArrayList<Cell> inCells = new ArrayList<Cell>();
+		ArrayList<Cell> visited = new ArrayList<Cell>();
 		if(maze.type == Maze.HEX){
-			visited = new boolean[sizeR][sizeC + (sizeR + 1) / 2];
 			do{
 				current = maze.map[randPos(sizeR)][randPos(sizeC + (sizeR + 1) / 2)];
 			}while(current==null);
 		}else{
-			visited = new boolean[sizeR][sizeC];
 			current = map[randPos(sizeR)][randPos(sizeC)];
 		}
 		inCells.add(current);
 		do{
 			Cell next = getNeigh(map,current,sizeR,sizeC,visited,maze.type);
 			if(next!=null){
-				visited[current.r][current.c] = true;
+				visited.add(current);
 				inCells.add(next);
 				current = next;
 			}else{
-				visited[current.r][current.c] = true;
+				visited.add(current);
 				inCells.remove(current);
 				if(!inCells.isEmpty())
 					current = inCells.get(randPos(inCells.size()));
@@ -70,12 +69,14 @@ public class GrowingTreeGenerator implements MazeGenerator {
 		}
 	}
 
-	private Cell getNeigh(Cell m[][], Cell cur, int sizeR, int sizeC, boolean vis[][], int type){
+	private Cell getNeigh(Cell m[][], Cell cur, int sizeR, int sizeC, ArrayList<Cell> visited, int type){
 		Cell next = null;
 		int dir[] = null;
 		int move = 0;
+		boolean cont = true;
 		dir = direction(6);
 		for(int i=0;i<Maze.NUM_DIR;i++){
+			/*
 			if(dir[i]==Maze.EAST){move = dir[i];}
 			else if(dir[i]==Maze.NORTH){move = dir[i];}
 			else if(dir[i]==Maze.WEST){move = dir[i];}
@@ -84,14 +85,27 @@ public class GrowingTreeGenerator implements MazeGenerator {
 				if(dir[i]==Maze.SOUTHWEST){move = dir[i];}
 				else if(dir[i]==Maze.NORTHEAST){move = dir[i];}
 			}
-			if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
-				if(!vis[cur.r + Maze.deltaR[move]][cur.c + Maze.deltaC[move]]){
-					next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
-					next.wall[Maze.oppoDir[move]].present = false;
-					cur.wall[move].present = false;
-					return next;
+			*/
+			if(dire[i]!=1 && dire[i]!=4){
+				move = dir[i];
+			}
+			else if(type==Maze.HEX){
+				move = dir[i];
+			}
+			else{
+				cont = false
+			}
+			if(cont){
+				if(inBounds(cur.r+Maze.deltaR[move],0,sizeR, cur.c+Maze.deltaC[move], 0, sizeC, type)){
+					if(!visited.contains(m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]])){
+						next = m[cur.r+Maze.deltaR[move]][cur.c+Maze.deltaC[move]];
+						next.wall[Maze.oppoDir[move]].present = false;
+						cur.wall[move].present = false;
+						return next;
+					}
 				}
 			}
+			cont = true;
 		}
 		return next;
 	}
