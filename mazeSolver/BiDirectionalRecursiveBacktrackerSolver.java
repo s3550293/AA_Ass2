@@ -38,16 +38,22 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 
 		//debug
 		for(int i = 0; i < 6; i++){
-			System.out.println(curPos.neigh[i]);
+			System.out.println(i + " " + curPos.neigh[i]);
+		}
+		maze.drawFtPrt(curPos);
+		stackCellsEn.push(curPos);
+		for(int i = 0; i < 6; i++){
 			curPos = map[curPos.r + maze.deltaR[maze.WEST]][curPos.c + maze.deltaC[maze.WEST]];
 			maze.drawFtPrt(curPos);
 			stackCellsEn.push(curPos);
+			visitedCellsEn[curPos.r][curPos.c] = true;
 		}
 		while(stackCellsEn.empty() == false){
 			System.out.println("Stack! " + stackCellsEn.peek());
 			stackCellsEn.pop();
 		}
-		getRandomNeighbour(curPos);
+		getRandomNeighbour(maze, curPos);
+
 
 		//working space
 
@@ -55,16 +61,24 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	} // end of solveMaze()
 
 	//returns nothing at the moment, will have to implement checking if neighbour has been visited before too.
-	private Cell getRandomNeighbour(Cell pos){
+	private Cell getRandomNeighbour(Maze maze, Cell pos){
 		//declare linked list of possible cells to return
 		LinkedList<Cell> listCells = new LinkedList<Cell>();
 		//adds all neighbours of pos to linked list "listCells"
+		//checks for if neighbour exists, is not visited and then if wall is in way
 		for(int i = 0; i < 6; i++){
-			if(pos.neigh[i] != null){
+			if(pos.neigh[i] != null
+			&& visitedCellsEn[curPos.r + maze.deltaR[i]][curPos.c + maze.deltaC[i]] == false
+			&& curPos.wall[i].present == false){
 				listCells.add(pos.neigh[i]);
 			}
 		}
-		System.out.println(Arrays.toString(listCells.toArray()) + ", " + listCells.size() + " elements.");
+		System.out.println("getRandomNeigh " + Arrays.toString(listCells.toArray()) + ", " + listCells.size() + " elements.");
+		if(listCells == null){
+			System.out.println("null reached");
+			return null;
+		}else{
+		}
 		return null;
 	}
 
