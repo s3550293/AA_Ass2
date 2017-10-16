@@ -6,8 +6,8 @@ import maze.Maze;
 import maze.Cell;
 
 public class GrowingTreeGenerator implements MazeGenerator {
-	// Growing tree maze generator. As it is very general, here we implement as "usually pick the most recent cell, but occasionally pick a random cell"	
-	double threshold = 0.1; // need to implement this tonight 
+	// Growing tree maze generator. As it is very general, here we implement as "usually pick the most recent cell, but occasionally pick a random cell"
+	double threshold = 0.1; // need to implement this tonight
 	@Override
 	public void generateMaze(Maze maze) {
 		int sizeR = maze.sizeR;
@@ -37,7 +37,11 @@ public class GrowingTreeGenerator implements MazeGenerator {
 				visited.add(current);
 				inCells.remove(current);
 				if(!inCells.isEmpty())
+				if(movement()){
+					current = inCells.get(inCells.size() - 1);
+				}else{
 					current = inCells.get(randPos(inCells.size()));
+				}
 			}
 		}while(!inCells.isEmpty());
 
@@ -46,6 +50,16 @@ public class GrowingTreeGenerator implements MazeGenerator {
 	private int randPos(int cap){
 		Random rand = new Random();
 		return rand.nextInt(cap);
+	}
+
+	private boolean movement(){
+		int val = randPos(100);
+		if(val <= 100*threshold){
+			System.out.println("Recursive");
+			return true;
+		}
+		System.out.println("Prims");
+		return false;
 	}
 
 	private int[] direction(int max){
