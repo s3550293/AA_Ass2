@@ -101,14 +101,14 @@ public class ModifiedPrimsGenerator implements MazeGenerator {
 
 	private Cell getNeigh(Maze m, Cell next, ArrayList<Cell> inCells, int type){
 		int move = 0;
-		int dire[] = direction(Maze.NUM_DIR);
+		int dir[] = direction(Maze.NUM_DIR);
 		boolean cont = true;
 		for(int i=0;i<Maze.NUM_DIR;i++){
-			if(dire[i]!=1 && dire[i]!=4){
-				move = dire[i];
+			if(dir[i]!=1 && dir[i]!=4){
+				move = dir[i];
 			}
 			else if(type==Maze.HEX){
-				move = dire[i];
+				move = dir[i];
 			}
 			else{
 				cont = false;

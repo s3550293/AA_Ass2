@@ -13,7 +13,6 @@ public class GrowingTreeGenerator implements MazeGenerator {
 		int sizeR = maze.sizeR;
 		int sizeC = maze.sizeC;
 		Cell current = null;
-		//boolean visited[][] = null;
 		Cell map[][] = maze.map;
 		ArrayList<Cell> inCells = new ArrayList<Cell>();
 		ArrayList<Cell> visited = new ArrayList<Cell>();
@@ -28,10 +27,13 @@ public class GrowingTreeGenerator implements MazeGenerator {
 		do{
 			Cell next = getNeigh(map,current,sizeR,sizeC,visited,maze.type);
 			if(next!=null){
+				System.out.println("Current: "+current.r+" "+current.c);
+				System.out.println("Next: "+current.r+" "+current.c);
 				visited.add(current);
 				inCells.add(next);
 				current = next;
 			}else{
+				System.out.println("POP Current: "+current.r+" "+current.c);
 				visited.add(current);
 				inCells.remove(current);
 				if(!inCells.isEmpty())
