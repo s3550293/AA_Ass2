@@ -11,21 +11,26 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	 * Declare global variables
 	 * (I know it's bad practice but it's so easy to work with, pls no bully ;-;)
 	 */
+	// boolean flag to stop while loop once it finds exit
 	boolean flagEnd = false;
+	// counter of the amount of cells traversed
 	int visitedCounter = 0;
+	// declares the maze type, 0 = normal, 1 = tunnel, 2 = hex
 	int mazeType = -1;
+	// decalres the map to keep track of visited cells
 	Cell[][] map;
+	// 2D boolean array keeping track of visited cells of both the entrance and exit
 	boolean[][] visitedCellsEn, visitedCellsEx;
-	Cell curPos;
-	int curDir;
+	// keeps track of the current visted cell
+	Cell curPosEn, curPosEx;
 
 	@Override
 	public void solveMaze(Maze maze){
 		Stack<Cell> stackCellsEn = new Stack<Cell>();
 		//assign values to the global variables
 		map = maze.map;
-		curPos = maze.entrance;
-		curDir = maze.EAST;
+		curPosEn = maze.entrance;
+		curPosEx = maze.exit;
 		mazeType = maze.type;
 		if (mazeType == 2){
 			visitedCellsEn = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
@@ -37,54 +42,76 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 		}
 
 		//debug
+		/*
 		for(int i = 0; i < 6; i++){
-			System.out.println(i + " " + curPos.neigh[i]);
+			System.out.println(i + " " + curPosEn.neigh[i]);
 		}
-		maze.drawFtPrt(curPos);
-		stackCellsEn.push(curPos);
+		maze.drawFtPrt(curPosEncurPosEn);
+		stackCellsEn.push(curPosEn);
 		for(int i = 0; i < 6; i++){
-			curPos = map[curPos.r + maze.deltaR[maze.WEST]][curPos.c + maze.deltaC[maze.WEST]];
-			maze.drawFtPrt(curPos);
-			stackCellsEn.push(curPos);
-			visitedCellsEn[curPos.r][curPos.c] = true;
+			curPosEn = map[curPosEn.r + maze.deltaR[maze.WEST]][curPosEn.c + maze.deltaC[maze.WEST]];
+			maze.drawFtPrt(curPosEn);
+			stackCellsEn.push(curPosEn);
+			visitedCellsEn[curPosEn.r][curPosEn.c] = true;
 		}
 		while(stackCellsEn.empty() == false){
 			System.out.println("Stack! " + stackCellsEn.peek());
 			stackCellsEn.pop();
 		}
-		getRandomNeighbour(maze, curPos);
+		System.out.println(getRandomNeighbour(maze, curPosEn));
+		*/
 
 
 		//working space
+		stackCellsEn.push(curPosEn);
+		maze.drawFtPrt(curPosEn);
+		visitedCellsEn[curPosEn.r][curPosEn.c] = true;
+		int debugCtr = 10;
+		for(int x=0;x<debugCtr;x++){
+			Cell neighbour = getRandomNeighbour(maze, curPosEn);
+			if(neighbour != null){
+				curPosEn = neighbour;
+				stackCellsEn.push(curPosEn);
+				maze.drawFtPrt(curPosEn);
+				visitedCellsEn[curPosEn.r][curPosEn.c] = true;
+			}
+			else{
+				stackCellsEn.pop();
+			}
+		}
 
+		while(stackCellsEn.empty() == false){
+			System.out.println("Stack! " + stackCellsEn.peek());
+			stackCellsEn.pop();
+		}
 
 	} // end of solveMaze()
 
-	//returns nothing at the moment, will have to implement checking if neighbour has been visited before too.
+	//returns a random unvisited neighbouring cell
 	private Cell getRandomNeighbour(Maze maze, Cell pos){
 		//declare linked list of possible cells to return
 		LinkedList<Cell> listCells = new LinkedList<Cell>();
 		//adds all neighbours of pos to linked list "listCells"
-		//checks for if neighbour exists, is not visited and then if wall is in way
+		//checks for if neighbour exists, is not visited and then if wall is in the way
 		for(int i = 0; i < 6; i++){
 			if(pos.neigh[i] != null
-			&& visitedCellsEn[curPos.r + maze.deltaR[i]][curPos.c + maze.deltaC[i]] == false
-			&& curPos.wall[i].present == false){
+			&& visitedCellsEn[pos.r + maze.deltaR[i]][pos.c + maze.deltaC[i]] == false
+			&& pos.wall[i].present == false){
 				listCells.add(pos.neigh[i]);
 			}
 		}
-		System.out.println("getRandomNeigh " + Arrays.toString(listCells.toArray()) + ", " + listCells.size() + " elements.");
 		if(listCells == null){
-			System.out.println("null reached");
 			return null;
 		}else{
+			int rdn = randomNo(listCells.size());
+			return listCells.get(rdn);
 		}
-		return null;
 	}
 
-	//returns random integeter from 0 to max
+	//returns random integeter from 0 to max - 1
 	private int randomNo(int max){
 		Random ran = new Random();
+		System.out.println("Max number = " + max);
 		return ran.nextInt(max);
 	}
 
@@ -93,9 +120,9 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 		return flagEnd;
 	} // end if isSolved()
 
-
 	@Override
 	public int cellsExplored(){
 		return visitedCounter;
 	} // end of cellsExplored()
+
 } // end of class BiDirectionalRecursiveBackTrackerSolver

@@ -15,25 +15,25 @@ public class WallFollowerSolver implements MazeSolver{
 	boolean flagEnd = false;
 	// counter of the amount of cells traversed
 	int visitedCounter = 0;
-	// declares the maze type,
+	// declares the maze type, 0 = normal, 1 = tunnel, 2 = hex
 	int mazeType = -1;
+	// decalres the map to keep track of visited cells
 	Cell[][] map;
+	// 2D boolean array keeping track of  visited cells
 	boolean[][] visitedCells;
+	// keeps track of the current visted cell
 	Cell curPos;
+	// keeps track of which direction curPos is facing
 	int curDir;
 
 	/*
 	 * Left hand wall follower search
-	 *
 	 * ******************************************************************************************
-	 *
 	 * ALGORITHM DFS ( G )
 	 * Perform a left hand wall follower search on the maze
 	 * Input: Maze of cells declared by the variable "maze"
 	 * OUTPUT : Maze "maze" marked with grey circles to show visited cells.
-	 *
 	 * ******************************************************************************************
-	 *
 	 * @param maze Input Maze.
 	 */
 	@Override
@@ -48,38 +48,33 @@ public class WallFollowerSolver implements MazeSolver{
 		maze.drawFtPrt(curPos);
 		visitedCounter++;
 
-		/*
-		//debug
-		try
-			Thread.sleep(1000);
-		catch(InterruptedException ex)
-			Thread.currentThread().interrupt();
-		*/
-
 		//solver loop
 		while(flagEnd == false){
 			if(curPos == maze.exit)
 				flagEnd = true;
 			//if tunnel is detected
 			else if(curPos.tunnelTo != null){
-				System.out.println("Tunnel = " + curPos.tunnelTo.r + " " + curPos.tunnelTo.c);
+				//move forward
 				curPos = curPos.tunnelTo;
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
+				//funky way figure out which neighbour is unvisited
 				int flagTunnel = 0;
 				while(flagTunnel >= 0){
-					System.out.println("inside flagTunnel loop");
 					//if there is no front wall
 					if(curPos.wall[curDir].present == false
+					//neighbour has not been visited
 					&& (visitedCells[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]] == false
+					//or has made greater than 4 loops
 					|| flagTunnel > 4)){
 						moveForward(maze);
+						//break flagTunnel loop
 						flagTunnel = -1;
 					}
+					//go clockwise and increment loop flag
 					else{
 						curDir = clockwise(curDir);
 						++flagTunnel;
-						System.out.println(flagTunnel);
 					}
 				}
 			}
@@ -110,7 +105,7 @@ public class WallFollowerSolver implements MazeSolver{
 		//below is needed to avoid logic error of current method ;-;
 		if(mazeType == 2)
 			curDir = antiClockwise(curDir);
-	}
+	}// end of moveForward
 
 	//finds direction that is anticlockwise of the current direction
 	private int antiClockwise(int dir){
