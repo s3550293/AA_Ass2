@@ -18,7 +18,7 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 
 	@Override
 	public void solveMaze(Maze maze){
-		// declares stack which keeps track of path
+		// declares stack which keeps track of paths
 		Stack<Cell> stackCellsEn = new Stack<Cell>();
 		Stack<Cell> stackCellsEx = new Stack<Cell>();
 		// decalres the map to keep track of visited cells
@@ -51,23 +51,27 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 
 	//traverse an add to a stack
 	private void traverse(Maze maze, boolean[][] visitedCells, Stack<Cell> stackCells){
+		visitedCounter++;
 		Cell neighbour = getRandomNeighbour(maze, stackCells.peek(), visitedCells);
-		if(neighbour != null){
+		if(stackCells.peek().tunnelTo != null
+		&& visitedCells[stackCells.peek().tunnelTo.r][stackCells.peek().tunnelTo.c] == false){
+			stackCells.push(stackCells.peek().tunnelTo);
+			visitedCells[stackCells.peek().r][stackCells.peek().c] = true;
+		}else if(neighbour != null){
 			Cell nextPos = neighbour;
-			System.out.println("Push - " + stackCells.peek().r + " " + stackCells.peek().c);
 			stackCells.push(nextPos);
-			//maze.drawFtPrt(nextPos);
 			visitedCells[nextPos.r][nextPos.c] = true;
 		}else{
-			System.out.println("Pop - " + stackCells.peek().r + " " + stackCells.peek().c);
 			stackCells.pop();
 		}
 	}// end of traverse()
 
 	// Check to see if a stack has intercepted another
 	private void intercept(Stack<Cell> stackCellsA, Stack<Cell> stackCellsB){
+		//if top of stackA exists in all of stackB
 		if(stackCellsB.contains(stackCellsA.peek()) == true){
 			flagEnd = true;
+			// pop the rest of stackB until it meets stack A
 			while(stackCellsB.peek() != stackCellsA.peek()){
 				stackCellsB.pop();
 			}
