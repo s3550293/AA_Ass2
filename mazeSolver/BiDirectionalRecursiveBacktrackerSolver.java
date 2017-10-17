@@ -15,17 +15,16 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	boolean flagEnd = false;
 	// counter of the amount of cells traversed
 	int visitedCounter = 0;
-	// decalres the map to keep track of visited cells
-	Cell[][] map;
-	// 2D boolean array keeping track of visited cells of both the entrance and exit
-	boolean[][] visitedCellsEn, visitedCellsEx;
 
 	@Override
 	public void solveMaze(Maze maze){
+		// declares stack which keeps track of path
 		Stack<Cell> stackCellsEn = new Stack<Cell>();
 		Stack<Cell> stackCellsEx = new Stack<Cell>();
-		//assign values to the global variables
-		map = maze.map;
+		// decalres the map to keep track of visited cells
+		Cell[][] map = maze.map;
+		// 2D boolean array keeping track of visited cells of both the entrance and exit
+		boolean[][] visitedCellsEn, visitedCellsEx;
 		if (maze.type == 2){
 			visitedCellsEn = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
 			visitedCellsEx = new boolean[maze.sizeR][maze.sizeC + (maze.sizeR + 1) / 2];
@@ -34,52 +33,23 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 			visitedCellsEx = new boolean[maze.sizeR][maze.sizeC];
 		}
 
-		//debug
-		/*
-		for(int i = 0; i < 6; i++){
-			System.out.println(i + " " + curPosEn.neigh[i]);
-		}
-		maze.drawFtPrt(curPosEncurPosEn);
-		stackCellsEn.push(curPosEn);
-		for(int i = 0; i < 6; i++){
-			curPosEn = map[curPosEn.r + maze.deltaR[maze.WEST]][curPosEn.c + maze.deltaC[maze.WEST]];
-			maze.drawFtPrt(curPosEn);
-			stackCellsEn.push(curPosEn);
-			visitedCellsEn[curPosEn.r][curPosEn.c] = true;
-		}
-		while(stackCellsEn.empty() == false){
-			System.out.println("Stack! " + stackCellsEn.peek());
-			stackCellsEn.pop();
-		}
-		System.out.println(getRandomNeighbour(maze, curPosEn));
-		*/
-
-
-		//working space
+		// initialise
 		stackCellsEn.push(maze.entrance);
 		stackCellsEx.push(maze.exit);
 		visitedCellsEn[maze.entrance.r][maze.entrance.c] = true;
 		visitedCellsEx[maze.exit.r][maze.exit.c] = true;
-		int debugCtr = 40;
+		// loop
 		while(flagEnd == false){
 			traverse(maze, visitedCellsEn, stackCellsEn);
 			intercept(stackCellsEn, stackCellsEx);
 			traverse(maze, visitedCellsEx, stackCellsEx);
 			intercept(stackCellsEx, stackCellsEn);
 		}
-
-		while(stackCellsEn.empty() == false){
-			maze.drawFtPrt(stackCellsEn.peek());
-			System.out.println("StackEn! " + stackCellsEn.peek());
-			stackCellsEn.pop();
-		}
-		while(stackCellsEx.empty() == false){
-			maze.drawFtPrt(stackCellsEx.peek());
-			System.out.println("StackEx! " + stackCellsEx.peek());
-			stackCellsEx.pop();
-		}
+		drawStack(maze, stackCellsEn);
+		drawStack(maze, stackCellsEx);
 	} // end of solveMaze()
 
+	//traverse an add to a stack
 	private void traverse(Maze maze, boolean[][] visitedCells, Stack<Cell> stackCells){
 		Cell neighbour = getRandomNeighbour(maze, stackCells.peek(), visitedCells);
 		if(neighbour != null){
@@ -94,6 +64,7 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 		}
 	}// end of traverse()
 
+	// Check to see if a stack has intercepted another
 	private void intercept(Stack<Cell> stackCellsA, Stack<Cell> stackCellsB){
 		if(stackCellsB.contains(stackCellsA.peek()) == true){
 			flagEnd = true;
@@ -101,6 +72,13 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 				stackCellsB.pop();
 			}
 		}
+	}// end of intercept()
+
+	private void drawStack(Maze maze, Stack<Cell> stackCells){
+			while(stackCells.empty() == false){
+				maze.drawFtPrt(stackCells.peek());
+				stackCells.pop();
+			}
 	}
 
 	// returns a random unvisited neighbouring cell
