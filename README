@@ -21,3 +21,20 @@ java -cp .;mazeSolver/SampleSolver.jar MazeTester PrimHex.para y
 java -cp .;mazeSolver/SampleSolver.jar MazeTester GrowNorm.para y
 
 java -cp .;mazeSolver/SampleSolver.jar MazeTester GrowHex.para y
+
+
+
+To run on server:
+java -cp .:mazeSolver/SampleSolver.jar MazeTester recurBackHex.para n
+ :
+java -cp .:mazeSolver/SampleSolver.jar MazeTester recurBackNorm.para n
+ :
+java -cp .:mazeSolver/SampleSolver.jar MazeTester recurBackTun.para n
+ :
+java -cp .:mazeSolver/SampleSolver.jar MazeTester PrimNorm.para n
+ :
+java -cp .:mazeSolver/SampleSolver.jar MazeTester PrimHex.para n
+ :
+java -cp .:mazeSolver/SampleSolver.jar MazeTester GrowNorm.para n
+ n
+java -cp .:mazeSolver/SampleSolver.jar MazeTester GrowHex.para n
