@@ -19,7 +19,7 @@ public class WallFollowerSolver implements MazeSolver{
 	int mazeType = -1;
 	// decalres the map to keep track of visited cells
 	Cell[][] map;
-	// 2D boolean array keeping track of  visited cells
+	// 2D boolean array keeping track of visited cells
 	boolean[][] visitedCells;
 	// keeps track of the current visted cell
 	Cell curPos;
@@ -27,14 +27,26 @@ public class WallFollowerSolver implements MazeSolver{
 	int curDir;
 
 	/*
-	 * Left hand wall follower search
+	 * Left hand wall follower solver
 	 * ******************************************************************************************
-	 * ALGORITHM DFS ( G )
+	 * ALGORITHM SOLVEMAZE(maze)
 	 * Perform a left hand wall follower search on the maze
 	 * Input: Maze of cells declared by the variable "maze"
-	 * OUTPUT : Maze "maze" marked with grey circles to show visited cells.
+	 * OUTPUT : None
+	 *  1: while flagEnd = false
+	 *  2: if curPos is at exit
+	 *  3: 		flagEnd = true;
+	 *  4: else if curPos is at tunnel
+	 *  5: 		curPos = tunnel
+	 *  6: 		flagTunnel = 0;
+	 *  7:		while flagTunnel >= 0
+	 *  8:			if curDir.wall is not present
+	 *  9:			and (not visited or flagTunnel < 4)
+	 * 10:				moveForward()
+	 * 11:				flagTunnel = -1;
+	 * 12:			else if
 	 * ******************************************************************************************
-	 * @param maze Input Maze.
+	 * @param maze Input maze
 	 */
 	@Override
 	public void solveMaze(Maze maze){
@@ -48,17 +60,18 @@ public class WallFollowerSolver implements MazeSolver{
 		maze.drawFtPrt(curPos);
 		visitedCounter++;
 
-		//solver loop
+		// solver loop
 		while(flagEnd == false){
 			if(curPos == maze.exit)
 				flagEnd = true;
-			//if tunnel is detected
+			// if tunnel is detected
 			else if(curPos.tunnelTo != null){
-				//move forward
+				// move forward
 				curPos = curPos.tunnelTo;
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
-				//funky way figure out which neighbour is unvisited
+				// funky way figure out which neighbour is unvisited
+				// flagTunnel keeps track of how many rotations is done
 				int flagTunnel = 0;
 				while(flagTunnel >= 0){
 					//if there is no front wall
@@ -69,6 +82,10 @@ public class WallFollowerSolver implements MazeSolver{
 					|| flagTunnel > 4)){
 						moveForward(maze);
 						//break flagTunnel loop
+						flagTunnel = -1;
+					}
+					else if(flagTunnel > 8){
+						curPos = curPos.tunnelTo;
 						flagTunnel = -1;
 					}
 					//go clockwise and increment loop flag
@@ -94,7 +111,87 @@ public class WallFollowerSolver implements MazeSolver{
 		}// end of while
 	} // end of solveMaze()
 
-	//moves curPos forward
+	/*
+	 * Finds a random unvisited neighbouring cell
+	 * ******************************************************************************************
+	 * ALGORITHM GETRANDOMNEIGHBOUR(maze, pos, visitedCells
+	 * INPUT : The maze, current cell position pos, stack of cells stackCells
+	 * OUTPUT : neighbouring cell
+	 *  1: declare listCells as LinkedList of Cells
+	 *  2: for number of directions
+	 *  3: 	if pos has a neighbour,
+	 *  4: 	direction has not been visited
+	 *  5: 	and pos has no walls in direction
+	 *  6: 		 add pos's neighbour to listCells
+	 *  7: 	end of if
+	 *  8: end of for
+	 *  9: if listCells is empty
+	 * 10:		return null
+	 * 11: else
+	 * 12: 		return random element from listCells
+	 * 13: end of if
+	 * ******************************************************************************************
+ 	 * @param maze Input maze
+ 	 * @param cell of current position that is getting neighbour
+ 	 * @param stackCells Stack of Cells that show the current path taken
+	 * @return neighbouring cell
+	 */
+	private Cell getRandomNeighbour(Maze maze, Cell pos, boolean[][] visitedCells){
+		// declare linked list of possible cells to return
+		LinkedList<int> listDir = new LinkedList<int>();
+		// adds all neighbours of pos to linked list "listCells"
+		for(int i = 0; i < 6; i++){
+			// if neighbour exists, is not visited and then if wall is in the way
+			if(pos.neigh[i] != null
+			&& pos.wall[i].present == false){
+				listDir.add(i);
+			}
+		}
+		//if linkedlist is empty then return null
+		if(listDir.size() == 0){
+			return null;
+		//else return random cell from linkedlist
+		}else{
+			int rdn = randomNo(listDir.size());
+			return listDir.get(rdn);
+		}
+	}// end of getRandomNeighbour()
+
+	/*
+	 * Generates random number between 0 and max - 1
+	 * ******************************************************************************************
+	 * ALGORITHM RANDOMNO(max)
+	 * INPUT : integer max
+	 * OUTPUT : None
+	 * 1: generate ran as random number
+	 * 2: return ran as integer
+	 * ******************************************************************************************
+	 * @param max Integer for range of max number
+	 * @return ran Random integer between 0 and max - 1
+	 */
+	private int randomNo(int max){
+		Random ran = new Random();
+		return ran.nextInt(max);
+	}
+
+	/*
+	 * Moves the curPos forward the maze
+	 * ******************************************************************************************
+	 * ALGORITHM MOVEFORWARD(maze)
+	 * INPUT : The maze
+	 * OUTPUT : None
+	 * 1: curPos = map[delta[curDir]]
+	 * 2: maze.drawFtPrt
+	 * 3: if mazeType is tunnel
+	 * 4: 	visitedCells[curPos] = true
+	 * 5: end if
+ 	 * 6: if mazeType is hex
+ 	 * 7: 	curDir = antiClockwise(curDir)
+ 	 * 8: end if
+	 * ******************************************************************************************
+	 * @param maze Input maze
+	 * @return integer representing anticlockwise direction
+	 */
 	private void moveForward(Maze maze){
 		curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
 		maze.drawFtPrt(curPos);
@@ -107,14 +204,30 @@ public class WallFollowerSolver implements MazeSolver{
 			curDir = antiClockwise(curDir);
 	}// end of moveForward
 
-	//finds direction that is anticlockwise of the current direction
+	/*
+	 * Finds direction that is anticlockwise of the current direction
+	 * ******************************************************************************************
+	 * ALGORITHM ANTICLOCKWISE(dir)
+	 * INPUT : dir Integer that represents current direction
+	 * OUTPUT : Integer that represents anticlockwise of the current direction
+	 * 1: if maze is hex
+	 * 2: 	return anticlockwise hex values
+	 * 3: else
+	 * 4: 	return anticlockwise square values
+	 * 5: end if
+	 * ******************************************************************************************
+	 * @param maze Input maze
+	 * @return integer representing anticlockwise direction
+	 */
 	private int antiClockwise(int dir){
+		// if maze is hex
 		if(mazeType == 2){
 			if(dir == 5)
 				return 0;
 			else
 				return ++dir;
 		}
+		// else any other maze
 		else{
 			switch (dir) {
 				case 0:
@@ -130,14 +243,30 @@ public class WallFollowerSolver implements MazeSolver{
 		return -1;
 	} //end of antiClockwise()
 
-	//finds direction that is clockwise of th current direction
+	/*
+	 * Finds direction that is clockwise of the current direction
+	 * ******************************************************************************************
+	 * ALGORITHM CLOCKWISE(dir)
+	 * INPUT : dir Integer that represents current direction
+	 * OUTPUT : Integer that represents clockwise of the current direction
+	 * 1: if maze is hex
+	 * 2: 	return clockwise hex values
+	 * 3: else
+	 * 4: 	return clockwise square values
+	 * 5: end if
+	 * ******************************************************************************************
+	 * @param maze Input maze
+	 * @return integer representing clockwise direction
+	 */
 	private int clockwise(int dir){
+		// if maze is hex
 		if(mazeType == 2){
 			if(dir == 0)
 				return 5;
 			else
 				return --dir;
 		}
+		// else any other maze
 		else{
 			switch (dir) {
 				case 0:
