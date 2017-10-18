@@ -19,8 +19,6 @@ public class WallFollowerSolver implements MazeSolver{
 	int mazeType = -1;
 	// decalres the map to keep track of visited cells
 	Cell[][] map;
-	// 2D boolean array keeping track of visited cells
-	boolean[][] visitedCells;
 	// keeps track of the current visted cell
 	Cell curPos;
 	// keeps track of which direction curPos is facing
@@ -34,17 +32,26 @@ public class WallFollowerSolver implements MazeSolver{
 	 * Input: Maze of cells declared by the variable "maze"
 	 * OUTPUT : None
 	 *  1: while flagEnd = false
-	 *  2: if curPos is at exit
+	 *  2: 	if curPos is at exit
 	 *  3: 		flagEnd = true;
-	 *  4: else if curPos is at tunnel
+	 *  4: 	else if curPos is at tunnel
 	 *  5: 		curPos = tunnel
-	 *  6: 		flagTunnel = 0;
-	 *  7:		while flagTunnel >= 0
-	 *  8:			if curDir.wall is not present
-	 *  9:			and (not visited or flagTunnel < 4)
-	 * 10:				moveForward()
-	 * 11:				flagTunnel = -1;
-	 * 12:			else if
+	 *  6: 		declare int neigh
+	 *  7:		if neigh >= 0
+	 *  8:			curDir = neigh;
+	 *  9:			moveForward()
+	 * 10:		else
+	 * 11:			curPos = tunnel
+	 * 12:			curDir = oppoDir[curDir];
+	 * 13: 		end of if
+	 * 14:	else if curPos.wall(anticlockwise(curDir)
+	 * 15:		curDir = antiClockwise(curDir)
+	 * 16:		moveForward()
+	 * 17:	else if curPos.wall(curDir)
+	 * 18:		moveForward()
+	 * 19:	else
+	 * 20:		curDir = clockwise(curDir)
+	 * 21: end of while
 	 * ******************************************************************************************
 	 * @param maze Input maze
 	 */
@@ -65,14 +72,17 @@ public class WallFollowerSolver implements MazeSolver{
 				flagEnd = true;
 			// if tunnel is detected
 			else if(curPos.tunnelTo != null){
-				// move forward
+				// move to tunnel
 				curPos = curPos.tunnelTo;
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
+				// move forward to random neighbour
 				int neigh = getRandomNeighbour(maze, curPos);
+				// if neighbouring direction exists, move random one
 				if(neigh >= 0){
 					curDir = neigh;
 					moveForward(maze);
+				//else there is no neighbour
 				}else{
 					curPos = curPos.tunnelTo;
 					curDir = maze.oppoDir[curDir];
@@ -96,45 +106,43 @@ public class WallFollowerSolver implements MazeSolver{
 	} // end of solveMaze()
 
 	/*
-	 * Finds a random unvisited neighbouring cell
+	 * Finds a random unvisited neighbouring cell's direction
 	 * ******************************************************************************************
-	 * ALGORITHM GETRANDOMNEIGHBOUR(maze, pos, visitedCells
-	 * INPUT : The maze, current cell position pos, stack of cells stackCells
-	 * OUTPUT : neighbouring cell
-	 *  1: declare listCells as LinkedList of Cells
+	 * ALGORITHM GETRANDOMNEIGHBOUR(maze, pos)
+	 * INPUT : The maze, current cell position pos
+	 * OUTPUT : direction of neighbouring cell
+	 *  1: declare listDir as linked list of directions
 	 *  2: for number of directions
-	 *  3: 	if pos has a neighbour,
-	 *  4: 	direction has not been visited
+	 *  3: 	if pos has a neighbour
 	 *  5: 	and pos has no walls in direction
-	 *  6: 		 add pos's neighbour to listCells
+	 *  6: 		 add pos's neighbour to listDir
 	 *  7: 	end of if
 	 *  8: end of for
 	 *  9: if listCells is empty
-	 * 10:		return null
+	 * 10:		return -1
 	 * 11: else
-	 * 12: 		return random element from listCells
+	 * 12: 		return random integer from listDir
 	 * 13: end of if
 	 * ******************************************************************************************
  	 * @param maze Input maze
  	 * @param cell of current position that is getting neighbour
- 	 * @param stackCells Stack of Cells that show the current path taken
-	 * @return neighbouring cell
+	 * @return int representing direction to neighbouring cell
 	 */
 	private int getRandomNeighbour(Maze maze, Cell pos){
 		// declare linked list of possible cells to return
 		LinkedList<Integer> listDir = new LinkedList<Integer>();
 		// adds all neighbours of pos to linked list "listCells"
 		for(int i = 0; i < 6; i++){
-			// if neighbour exists, is not visited and then if wall is in the way
+			// if neighbour exists and if wall is not in the way
 			if(pos.neigh[i] != null
 			&& pos.wall[i].present == false){
 				listDir.add(i);
 			}
 		}
-		//if linkedlist is empty then return null
+		//if linkedlist is empty then return -1
 		if(listDir.size() == 0){
 			return -1;
-		//else return random cell from linkedlist
+		//else return random element from linkedlist
 		}else{
 			int rdn = randomNo(listDir.size());
 			return listDir.get(rdn);
@@ -166,12 +174,9 @@ public class WallFollowerSolver implements MazeSolver{
 	 * OUTPUT : None
 	 * 1: curPos = map[delta[curDir]]
 	 * 2: maze.drawFtPrt
-	 * 3: if mazeType is tunnel
-	 * 4: 	visitedCells[curPos] = true
-	 * 5: end if
- 	 * 6: if mazeType is hex
- 	 * 7: 	curDir = antiClockwise(curDir)
- 	 * 8: end if
+ 	 * 3: if mazeType is hex
+ 	 * 4: 	curDir = antiClockwise(curDir)
+ 	 * 5: end if
 	 * ******************************************************************************************
 	 * @param maze Input maze
 	 * @return integer representing anticlockwise direction

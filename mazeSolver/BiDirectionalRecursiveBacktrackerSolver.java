@@ -138,7 +138,7 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	 * @param stackCellsB Stack of Cells that show the current path taken
 	 */
 	private void intercept(Stack<Cell> stackCellsA, Stack<Cell> stackCellsB){
-		//if top of stackA exists in all of stackB
+		// if top of stackA exists in all of stackB
 		if(stackCellsB.contains(stackCellsA.peek()) == true){
 			// end the main loop
 			flagEnd = true;
@@ -174,10 +174,10 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 	/*
 	 * Finds a random unvisited neighbouring cell
 	 * ******************************************************************************************
-	 * ALGORITHM GETRANDOMNEIGHBOUR(maze, pos, visitedCells
+	 * ALGORITHM GETRANDOMNEIGHBOUR(maze, pos, visitedCells)
 	 * INPUT : The maze, current cell position pos, stack of cells stackCells
 	 * OUTPUT : neighbouring cell
-	 *  1: declare listCells as LinkedList of Cells
+	 *  1: declare listCells as linked list of Cells
 	 *  2: for number of directions
 	 *  3: 	if pos has a neighbour,
 	 *  4: 	direction has not been visited
@@ -201,17 +201,17 @@ public class BiDirectionalRecursiveBacktrackerSolver implements MazeSolver {
 		LinkedList<Cell> listCells = new LinkedList<Cell>();
 		// adds all neighbours of pos to linked list "listCells"
 		for(int i = 0; i < 6; i++){
-			// if neighbour exists, is not visited and then if wall is in the way
+			// if neighbour exists, is not visited and then if wall is not in the way
 			if(pos.neigh[i] != null
 			&& visitedCells[pos.r + maze.deltaR[i]][pos.c + maze.deltaC[i]] == false
 			&& pos.wall[i].present == false){
 				listCells.add(pos.neigh[i]);
 			}
 		}
-		//if linkedlist is empty then return null
+		// if linkedlist is empty then return null
 		if(listCells.size() == 0){
 			return null;
-		//else return random cell from linkedlist
+		// else return random cell from linkedlist
 		}else{
 			int rdn = randomNo(listCells.size());
 			return listCells.get(rdn);
