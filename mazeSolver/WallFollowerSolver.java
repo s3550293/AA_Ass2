@@ -52,7 +52,6 @@ public class WallFollowerSolver implements MazeSolver{
 	public void solveMaze(Maze maze){
 		//assign values to the global variables
 		map = maze.map;
-		visitedCells = new boolean[maze.sizeR][maze.sizeC];
 		curPos = maze.entrance;
 		curDir = maze.EAST;
 		mazeType = maze.type;
@@ -70,29 +69,14 @@ public class WallFollowerSolver implements MazeSolver{
 				curPos = curPos.tunnelTo;
 				maze.drawFtPrt(curPos);
 				visitedCounter++;
-				// funky way figure out which neighbour is unvisited
-				// flagTunnel keeps track of how many rotations is done
-				int flagTunnel = 0;
-				while(flagTunnel >= 0){
-					//if there is no front wall
-					if(curPos.wall[curDir].present == false
-					//neighbour has not been visited
-					&& (visitedCells[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]] == false
-					//or has made greater than 4 loops
-					|| flagTunnel > 4)){
-						moveForward(maze);
-						//break flagTunnel loop
-						flagTunnel = -1;
-					}
-					else if(flagTunnel > 8){
-						curPos = curPos.tunnelTo;
-						flagTunnel = -1;
-					}
-					//go clockwise and increment loop flag
-					else{
-						curDir = clockwise(curDir);
-						++flagTunnel;
-					}
+				int neigh = getRandomNeighbour(maze, curPos);
+				if(neigh >= 0){
+					curDir = neigh;
+					moveForward(maze);
+				}else{
+					curPos = curPos.tunnelTo;
+					curDir = maze.oppoDir[curDir];
+					moveForward(maze);
 				}
 			}
 			//if there is no left wall
@@ -136,9 +120,9 @@ public class WallFollowerSolver implements MazeSolver{
  	 * @param stackCells Stack of Cells that show the current path taken
 	 * @return neighbouring cell
 	 */
-	private Cell getRandomNeighbour(Maze maze, Cell pos, boolean[][] visitedCells){
+	private int getRandomNeighbour(Maze maze, Cell pos){
 		// declare linked list of possible cells to return
-		LinkedList<int> listDir = new LinkedList<int>();
+		LinkedList<Integer> listDir = new LinkedList<Integer>();
 		// adds all neighbours of pos to linked list "listCells"
 		for(int i = 0; i < 6; i++){
 			// if neighbour exists, is not visited and then if wall is in the way
@@ -149,7 +133,7 @@ public class WallFollowerSolver implements MazeSolver{
 		}
 		//if linkedlist is empty then return null
 		if(listDir.size() == 0){
-			return null;
+			return -1;
 		//else return random cell from linkedlist
 		}else{
 			int rdn = randomNo(listDir.size());
@@ -196,9 +180,6 @@ public class WallFollowerSolver implements MazeSolver{
 		curPos = map[curPos.r + maze.deltaR[curDir]][curPos.c + maze.deltaC[curDir]];
 		maze.drawFtPrt(curPos);
 		visitedCounter++;
-		//visitedCells only used for tunnels
-		if(mazeType == 1)
-			visitedCells[curPos.r][curPos.c] = true;
 		//below is needed to avoid logic error of current method ;-;
 		if(mazeType == 2)
 			curDir = antiClockwise(curDir);
